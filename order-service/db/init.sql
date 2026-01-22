@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS orders (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    total_amount INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id UUID PRIMARY KEY,
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    item_name VARCHAR(255) NOT NULL,
+    quantity INTEGER NOT NULL
+);
