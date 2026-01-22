@@ -13,7 +13,7 @@ RUN npm install --only=production
 COPY src ./src
 
 # Expose service port
-EXPOSE 3000
+EXPOSE 4000
 
 # Start the service
 CMD ["node", "src/app.js"]

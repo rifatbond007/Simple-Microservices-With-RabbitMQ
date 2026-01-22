@@ -7,6 +7,6 @@ RUN npm install --only=production
 
 COPY src ./src
 
-EXPOSE 3001
+EXPOSE 4001
 
 CMD ["node", "src/app.js"]
