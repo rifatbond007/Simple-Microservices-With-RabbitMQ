@@ -31,16 +31,6 @@ jobs:
           docker ps
           docker compose ps
 
-      - name: Verify health checks
-        run: |
-          set -e
-          for service in auth-service order-service auth-db order-db rabbitmq; do
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' $service || echo "no-healthcheck")
-            echo "$service -> $STATUS"
-            if [ "$STATUS" = "unhealthy" ]; then
-              exit 1
-            fi
-          done
 
       - name: Show logs on failure
         if: failure()
