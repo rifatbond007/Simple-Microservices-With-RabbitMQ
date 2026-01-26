@@ -1,0 +1,53 @@
+name: Microservices Application CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & start services
+        run: |
+          docker compose up -d --build
+
+      - name: Wait for services
+        run: |
+          echo "Waiting for services to be healthy..."
+          sleep 10
+
+      - name: Check running containers
+        run: |
+          docker ps
+          docker compose ps
+
+      - name: Verify health checks
+        run: |
+          set -e
+          for service in auth-service order-service auth-db order-db rabbitmq; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' $service || echo "no-healthcheck")
+            echo "$service -> $STATUS"
+            if [ "$STATUS" = "unhealthy" ]; then
+              exit 1
+            fi
+          done
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          docker compose logs
+
+      - name: Stop containers
+        if: always()
+        run: |
+          docker compose down -v
